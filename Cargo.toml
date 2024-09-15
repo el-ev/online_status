@@ -10,9 +10,9 @@ serde = { version = "1.0.210", features = ["derive"] }
 axum = "0.7.5"
 pgp = "0.13.2"
 hex = "0.4.3"
-log = "0.4.22"
 reqwest = { version = "0.12.7", features = ["json"] }
 serde_json = "1.0.128"
+sysinfo = "0.31.4"
 
 [features]
 default = []

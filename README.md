@@ -11,7 +11,7 @@ $ online_status -s [-p <port>] [--pubkey </path/to/pubkey>]
 
 ### Client(s)
 ``` bash
-$ online_status -c <server> [-p <port>] [--privkey </path/to/privkey>]
+$ online_status -c <server> [-p <port>] [--https] [--privkey </path/to/privkey>]
 ```
 
 ### Check online status
