@@ -1,24 +1,25 @@
+use crate::{config::Args, HeartBeat, HEARTBEAT_INTERVAL, TIMEOUT};
 use pgp::{
     crypto::hash::HashAlgorithm,
     types::{KeyTrait, SecretKeyTrait},
-    Deserializable,
+    Deserializable, SignedSecretKey,
 };
 use std::{
     error::Error,
+    fs::File,
     io::Read,
     time::{SystemTime, UNIX_EPOCH},
 };
 use tokio::time;
-use crate::{config::Args, HeartBeat, HEARTBEAT_INTERVAL, TIMEOUT};
 
 pub async fn client_main(args: Args) -> Result<(), Box<dyn Error>> {
     let privkey = if let Some(path) = args.privkey {
-        let content = std::fs::File::open(path).and_then(|mut f| {
+        let content = File::open(path).and_then(|mut f| {
             let mut s = String::new();
             f.read_to_string(&mut s)?;
             Ok(s)
         })?;
-        let (privkey, _) = pgp::SignedSecretKey::from_string(&content)?;
+        let (privkey, _) = SignedSecretKey::from_string(&content)?;
         if !privkey.is_signing_key() {
             return Err("Private key is not a signing key".into());
         }

@@ -14,6 +14,7 @@ use reqwest::header;
 use std::{
     collections::HashMap,
     error::Error,
+    fs::File,
     io::Read,
     net::{IpAddr, SocketAddr},
     sync::{Arc, Mutex},
@@ -62,7 +63,7 @@ struct AppState {
 
 pub async fn server_main(args: Args) -> Result<(), Box<dyn Error>> {
     let public_key = if let Some(path) = args.pubkey {
-        let content = std::fs::File::open(path).and_then(|mut f| {
+        let content = File::open(path).and_then(|mut f| {
             let mut s = String::new();
             f.read_to_string(&mut s)?;
             Ok(s)

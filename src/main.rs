@@ -3,9 +3,9 @@ use config::try_parse_args;
 use serde::{Deserialize, Serialize};
 use server::server_main;
 
-mod server;
 mod client;
 mod config;
+mod server;
 
 const TIMEOUT: u64 = 5;
 const HEARTBEAT_INTERVAL: u64 = 60; // 1 minute
@@ -30,7 +30,7 @@ async fn main() {
             println!("error: {}", e);
             std::process::exit(1);
         });
-    } else {
+    } else if args.client.is_some() {
         client_main(args).await.unwrap_or_else(|e| {
             println!("error: {}", e);
             std::process::exit(1);

@@ -2,7 +2,6 @@ use std::{error::Error, net::ToSocketAddrs, path::PathBuf};
 
 use clap::Parser;
 
-
 #[derive(Parser, Debug)]
 pub struct Args {
     /// Run the program as a server
@@ -30,6 +29,9 @@ pub fn try_parse_args() -> Result<Args, Box<dyn Error>> {
     if args.server && args.client.is_some() {
         return Err("Cannot specify both server and client mode".into());
     }
+    if !args.server && args.client.is_none() {
+        return Err("Must specify either server or client mode".into());
+    }
     if args.pubkey.is_some() && !args.pubkey.as_ref().unwrap().exists() {
         return Err("Public key file does not exist".into());
     }
@@ -55,4 +57,3 @@ pub fn try_parse_args() -> Result<Args, Box<dyn Error>> {
     }
     Ok(args)
 }
-
