@@ -9,7 +9,7 @@ mod server;
 
 const TIMEOUT: u64 = 5;
 const HEARTBEAT_INTERVAL: u64 = 60; // 1 minute
-const OFFLINE_TIMEOUT: u64 = 300; // 5 minutes
+const OFFLINE_TIMEOUT: u64 = 180; // 3 minutes
 const ZOMBIE_TIMEOUT: u64 = 3600; // 1 hour
 
 #[derive(Serialize, Deserialize)]

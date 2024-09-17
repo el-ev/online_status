@@ -29,17 +29,10 @@ pub async fn client_main(args: Args) -> Result<(), Box<dyn Error>> {
     };
     let client: reqwest::Client = reqwest::Client::new();
     loop {
-        // On windows only send the heartbeat if the screen is not locked
-        #[cfg(windows)]
-        {
-            if sysinfo::System::new_all()
-                .processes()
-                .iter()
-                .any(|(_, p)| p.name().to_ascii_lowercase() == "logonui.exe")
-            {
-                tokio::time::sleep(tokio::time::Duration::from_secs(HEARTBEAT_INTERVAL)).await;
-                continue;
-            }
+        if is_afk() {
+            println!("info: AFK");
+            tokio::time::sleep(tokio::time::Duration::from_secs(HEARTBEAT_INTERVAL)).await;
+            continue;
         }
         let timestamp = SystemTime::now()
             .duration_since(UNIX_EPOCH)
@@ -89,4 +82,31 @@ pub async fn client_main(args: Args) -> Result<(), Box<dyn Error>> {
 
         time::sleep(time::Duration::from_secs(HEARTBEAT_INTERVAL)).await;
     }
+}
+
+#[cfg(target_os = "windows")]
+fn is_afk() -> bool {
+    sysinfo::System::new_all()
+        .processes()
+        .iter()
+        .any(|(_, p)| p.name().to_ascii_lowercase() == "logonui.exe")
+}
+
+#[cfg(target_os = "macos")]
+fn is_afk() -> bool {
+    let ioreg = std::process::Command::new("ioreg")
+        .args(&["-n", "Root", "-d1"])
+        .output();
+    if let Ok(output) = ioreg {
+        let output = String::from_utf8_lossy(&output.stdout);
+        let mut lines = output.lines();
+        lines.any(|l| l.contains("CGSSessionScreenIsLocked"))
+    } else {
+        false
+    }
+}
+
+#[cfg(not(any(target_os = "windows", target_os = "macos")))]
+fn is_afk() -> bool {
+    false
 }
